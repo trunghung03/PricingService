@@ -2,7 +2,7 @@ import requests
 import time
 
 def call_api():
-    url = 'http://127.0.0.1:8000/update_fluctuation/'  # Replace with your API endpoint
+    url = 'https://pricingservice-z16l.onrender.com/update_fluctuation/'  # Replace with your API endpoint
     try:
         response = requests.post(url)
         response.raise_for_status()  # Raise an exception for HTTP errors
