@@ -18,12 +18,18 @@ app.add_middleware(
 # Load the CSV file
 file_path = 'diamonds.csv'
 diamonds_df = pd.read_csv(file_path)
+metal_file_path = 'metals.csv'
+metals_df = pd.read_csv(metal_file_path)
 
 class DiamondRequest(BaseModel):
     cut: str
     carat: float
     clarity: str
     color: str
+    
+# Model for metal price request
+class MetalRequest(BaseModel):
+    name: str
 
 def read_fluctuation(file_path: str) -> float:
     """
@@ -97,6 +103,33 @@ def get_diamond_price(diamond: DiamondRequest):
         return {"price": adjusted_price}
     else:
         raise HTTPException(status_code=404, detail="Diamond not found")
+
+# Endpoint to get the price of a rare metal
+@app.post("/metal_price/")
+def get_metal_price(metal: MetalRequest):
+    """
+    Endpoint to get the price of a metal based on its name.
+    Adjusts the price based on a fluctuation percentage from an external file.
+    
+    Parameters:
+    metal (MetalRequest): The name of the metal
+    
+    Returns:
+    dict: The adjusted price of the metal if found, otherwise an error message
+    """
+    fluctuation_file_path = 'fluctuation.txt'
+    metal_prices_file_path = 'metals_pricing.csv'
+    
+    fluctuation = read_fluctuation(fluctuation_file_path)
+    
+    filtered_df = metals_df[metals_df['name'] == metal.name]
+    
+    if not filtered_df.empty:
+        base_price = int(filtered_df.iloc[0]['price'])
+        adjusted_price = base_price * (1 + fluctuation / 100)
+        return {"price": adjusted_price}
+    else:
+        raise HTTPException(status_code=404, detail="Metal not found")
 
 @app.post("/update_fluctuation/")
 def update_fluctuation():

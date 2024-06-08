@@ -40,7 +40,7 @@ def get_diamond_price(cut, carat, clarity, color):
 file_path = 'diamonds.csv'
 diamonds_df = pd.read_csv(file_path)
 
-# get_column_value()
+get_column_value()
 cut = 'Ideal'
 carat = 0.23
 clarity = 'SI2'
